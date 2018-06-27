@@ -1,4 +1,5 @@
 import logging
+import src.utils.vt100_codes as vt100
 
 class CommandInterpreter(object):
   def __init__(self):
@@ -23,6 +24,6 @@ class CommandInterpreter(object):
     if executed:
       return True
     
-    connection.send('\r\nUnknown command: ' + cmd_string + '\r\n')
+    connection.send(vt100.newline + 'Unknown command: ' + vt100.red + cmd_string + vt100.newline)
 
     return False
