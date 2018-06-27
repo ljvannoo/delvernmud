@@ -13,3 +13,6 @@ class Handler(object):
     
   def prompt(self):
     pass
+
+  def handle(self, cmd_string):
+    pass

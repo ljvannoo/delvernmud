@@ -1,4 +1,5 @@
 from enum import Enum
+import src.utils.vt100_codes as vt100
 
 class Connection(object):
   def __init__(self, reader, writer, notify_queue):
@@ -36,6 +37,9 @@ class Connection(object):
 
   def send(self, msg):
     self._writer.write(msg)
+  
+  def send_blank_line(self):
+    self._writer.write(vt100.newline)
   
   def echo(self, msg):
     self._writer.echo(msg)

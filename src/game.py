@@ -5,7 +5,7 @@ import logging
 
 from src.connection import Connection
 from src.command_interpreter import CommandInterpreter
-from src.handlers.game_handler import GameHandler
+from src.handlers.login_handler import LoginHandler
 
 class Game(object):
   def __init__(self):
@@ -17,7 +17,7 @@ class Game(object):
 
   def total_connections(self):
     return len(self._connections)
-    
+
   @contextlib.contextmanager
   def register_link(self, reader, writer):
     connection = Connection(reader, writer, notify_queue=asyncio.Queue())
@@ -35,13 +35,13 @@ class Game(object):
     readline = asyncio.ensure_future(connection.readline())
     recv_msg = asyncio.ensure_future(connection.notify_queue.get())
 
-    connection.enter_handler(GameHandler(connection))
+    connection.enter_handler(LoginHandler(connection))
 
     wait_for = set([readline, recv_msg])
     try:
       while True:
         # client.writer.write('? ')
-        connection.current_handler().prompt()
+        # connection.current_handler().prompt()
 
         # await (1) client input or (2) system notification
         done, pending = yield from asyncio.wait(
@@ -55,7 +55,8 @@ class Game(object):
                .rstrip())
 
           connection.echo(cmd)
-          self._command_interpreter.process_command(connection, cmd)
+          # self._command_interpreter.process_command(connection, cmd)
+          connection.current_handler().handle(cmd)
 
           # await next,
           readline = asyncio.ensure_future(connection.readline())
