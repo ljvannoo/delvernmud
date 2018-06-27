@@ -14,17 +14,15 @@ class CommandInterpreter(object):
     command = clazz()
     self._command_list[command.get_name()] = command
 
-  def process_command(self, client, cmd_string):
+  def process_command(self, connection, cmd_string):
     executed = False
     for cmd_name in self._command_list:
       cmd = self._command_list[cmd_name]
-      executed = cmd.execute(client, cmd_string)
+      executed = cmd.execute(connection, cmd_string)
           
     if executed:
       return True
     
-    result = '\r\n'
-    result += cmd_string
-    client.writer.write(result + '\r\n')
+    connection.send('\r\nUnknown command: ' + cmd_string + '\r\n')
 
     return False

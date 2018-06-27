@@ -3,12 +3,13 @@ import asyncio
 import telnetlib3
 import logging
 
-from src.client import Client, State
+from src.connection import Connection
 from src.command_interpreter import CommandInterpreter
+from src.handlers.game_handler import GameHandler
 
 class Game(object):
   def __init__(self):
-    self.clients = []
+    self._connections = []
     self._loop = asyncio.get_event_loop()
     self._command_interpreter = CommandInterpreter()
 
@@ -16,27 +17,28 @@ class Game(object):
 
   @contextlib.contextmanager
   def register_link(self, reader, writer):
-    client = Client(reader, writer, notify_queue=asyncio.Queue())
-    self.clients.append(client)
+    connection = Connection(reader, writer, notify_queue=asyncio.Queue())
+    self._connections.append(connection)
     try:
-      #self.notify_event('LINK ESTABLISHED TO {}'.format(client))
-      yield client
+      yield connection
 
     finally:
-      self.clients.remove(client)
-      #self.notify_event('LOST CONNECTION TO {}'.format(client))
+      self._connections.remove(connection)
 
-  def main_loop(self, client):
+  def main_loop(self, connection):
     from telnetlib3 import WONT, ECHO, SGA
-    client.writer.iac(WONT, ECHO)
-    client.writer.iac(WONT, SGA)
-    readline = asyncio.ensure_future(client.reader.readline())
-    recv_msg = asyncio.ensure_future(client.notify_queue.get())
-    client.writer.write('КОСМОС/300: READY\r\n')
+    connection.set_iac(WONT, ECHO)
+    connection.set_iac(WONT, SGA)
+    readline = asyncio.ensure_future(connection.readline())
+    recv_msg = asyncio.ensure_future(connection.notify_queue.get())
+
+    connection.enter_handler(GameHandler(connection))
+
     wait_for = set([readline, recv_msg])
     try:
       while True:
-        client.writer.write('? ')
+        # client.writer.write('? ')
+        connection.current_handler().prompt()
 
         # await (1) client input or (2) system notification
         done, pending = yield from asyncio.wait(
@@ -49,11 +51,11 @@ class Game(object):
           cmd = (task.result()
                .rstrip())
 
-          client.writer.echo(cmd)
-          self._command_interpreter.process_command(client, cmd)
+          connection.echo(cmd)
+          self._command_interpreter.process_command(connection, cmd)
 
           # await next,
-          readline = asyncio.ensure_future(client.reader.readline())
+          readline = asyncio.ensure_future(connection.readline())
           wait_for.add(readline)
 
         else:
@@ -61,16 +63,17 @@ class Game(object):
           msg = task.result()
 
           # await next,
-          recv_msg = asyncio.ensure_future(client.notify_queue.get())
+          recv_msg = asyncio.ensure_future(connection.notify_queue.get())
           wait_for.add(recv_msg)
 
           # show and display prompt,
-          client.writer.write('\r\x1b[K{}\r\n'.format(msg))
-
-        if client.state == State.DISCONNECTING:
-          if client in self.clients:
-            client.writer.close()
+          # client.current_state().prompt(msg)
+          
+        if connection.current_handler() == None:
+          if connection in self._connections:
+            connection.close()
             break
+
     finally:
       for task in wait_for:
         task.cancel()
