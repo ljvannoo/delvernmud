@@ -9,6 +9,7 @@ class Connection(object):
     # self._player = None
     self._handler_stack = []
     self._id = self._writer.get_extra_info('peername')[1]
+    self.player = None
 
   def __str__(self):
     return '#{1}'.format(self.get_id())
@@ -16,7 +17,7 @@ class Connection(object):
   def get_id(self):
     return self._id
 
-  def current_handler(self):
+  def handler(self):
     if not len(self._handler_stack):
       return None
       
@@ -31,7 +32,7 @@ class Connection(object):
     current_handler.leave()
 
   def hang_up(self):
-    current_handler = self.current_handler()
+    current_handler = self.handler()
     self._handler_stack = []
     current_handler.hang_up()
 

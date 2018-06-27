@@ -56,7 +56,7 @@ class Game(object):
 
           connection.echo(cmd)
           # self._command_interpreter.process_command(connection, cmd)
-          connection.current_handler().handle(cmd)
+          connection.handler().handle(cmd)
 
           # await next,
           readline = asyncio.ensure_future(connection.readline())
@@ -73,7 +73,7 @@ class Game(object):
           # show and display prompt,
           # client.current_state().prompt(msg)
           
-        if connection.current_handler() == None:
+        if connection.handler() == None:
           if connection in self._connections:
             connection.close()
             break

@@ -1,4 +1,5 @@
 from src.handlers.handler import Handler
+from src.handlers.chat_handler import ChatHandler
 import src.utils.vt100_codes as vt100
 from src.managers.player_manager import PlayerManager
 from src.entities.player import Player
@@ -14,9 +15,6 @@ class LoginHandler(Handler):
 
     self.prompt()
   
-  def hang_up(self):
-    self._connection.send('\r\nGoodbye!\r\n')
-
   def prompt(self):
     # self._client.writer.write('\r\x1b[K{}Please enter your name: \r\n'.format(msg))
     self._connection.send('Please enter your name: ')
@@ -25,15 +23,15 @@ class LoginHandler(Handler):
     name = cmd.lower().capitalize()
 
     if not self._player_manager.has_player(name):
-      player = Player(name)
+      player = Player(name, self._connection)
+      self._connection.player = player
       self._player_manager.add_player(player)
-
-      self._connection.send_blank_line()
-      self._connection.send('Welcome, ' + vt100.green + player.get_name() + vt100.reset + '!' + vt100.newline)
-      self._connection.send_blank_line()
+      
+      self._connection.leave_handler()
+      self._connection.enter_handler(ChatHandler(self._connection))
     else:
       self._connection.send_blank_line()
       self._connection.send('That player already exists! Please select a different name.' + vt100.newline)
       self._connection.send_blank_line()
 
-    self.prompt()
+      self.prompt()

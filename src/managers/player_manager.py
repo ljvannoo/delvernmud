@@ -8,6 +8,18 @@ class PlayerManager(object):
     
     def add_player(self, player):
       self._players[player.get_name()] = player
+
+    def send_all(self, msg):
+      for name in self._players:
+        player = self._players[name]
+        player.get_connection().send(msg)
+      
+    def send_others(self, player, msg):
+      for name in self._players:
+        if name != player.get_name():
+          other_player = self._players[name]
+          other_player.get_connection().send(msg)
+          other_player.get_connection().handler().prompt()
   
   instance = None
   
