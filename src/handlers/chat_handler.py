@@ -1,3 +1,5 @@
+import logging
+
 from src.handlers.handler import Handler
 import src.utils.vt100_codes as vt100
 from src.managers.player_manager import PlayerManager
@@ -26,7 +28,8 @@ class ChatHandler(Handler):
     msg = 'You say, "' + cmd + '"' + vt100.newline
     self._connection.send(vt100.newline + msg)
 
-    msg = vt100.clearline + vt100.home + vt100.green + self._connection.player.get_name() + vt100.reset + ' says, "' + cmd + '"' + vt100.newline
-    self._player_manager.send_others(self._connection.player, msg)
+    msg = vt100.green + self._connection.player.get_name() + vt100.reset + ' says, "' + cmd + '"'
+    self._player_manager.send_others(self._connection.player, vt100.clearline + vt100.home + msg + vt100.newline)
+    logging.info(msg.rstrip())
 
     self.prompt()

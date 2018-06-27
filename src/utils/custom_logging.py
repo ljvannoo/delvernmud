@@ -6,5 +6,5 @@ def configure_log_file(prefix):
   #log_file = 'logs/' + prefix + '_' + timestamp + '_' + env.upper() + suffix + '.log'
   log_file = 'logs/' + prefix + '.log'
   log_format = '%(levelname)s:%(asctime)s - %(message)s'
-  logging.basicConfig(level=logging.INFO, filename=log_file, format=log_format)
+  logging.basicConfig(level=logging.INFO, filename=log_file, format=log_format, filemode='w')
   logging.getLogger().addHandler(logging.StreamHandler())

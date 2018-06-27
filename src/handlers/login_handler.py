@@ -1,3 +1,4 @@
+import logging
 from src.handlers.handler import Handler
 from src.handlers.chat_handler import ChatHandler
 import src.utils.vt100_codes as vt100
@@ -29,6 +30,8 @@ class LoginHandler(Handler):
       
       self._connection.leave_handler()
       self._connection.enter_handler(ChatHandler(self._connection))
+
+      logging.info(vt100.green + name + vt100.reset + ' logged in')
     else:
       self._connection.send_blank_line()
       self._connection.send('That player already exists! Please select a different name.' + vt100.newline)
