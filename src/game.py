@@ -15,6 +15,9 @@ class Game(object):
 
     self._command_interpreter.register_command('quit')
 
+  def total_connections(self):
+    return len(self._connections)
+    
   @contextlib.contextmanager
   def register_link(self, reader, writer):
     connection = Connection(reader, writer, notify_queue=asyncio.Queue())
