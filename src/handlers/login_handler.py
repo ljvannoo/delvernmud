@@ -3,7 +3,6 @@ from src.handlers.handler import Handler
 from src.handlers.chat_handler import ChatHandler
 import src.utils.vt100_codes as vt100
 from src.managers.player_manager import PlayerManager
-from src.entities.player import Player
 
 class LoginHandler(Handler):
   def __init__(self, connection):
@@ -23,10 +22,11 @@ class LoginHandler(Handler):
   def handle(self, cmd):
     name = cmd.lower().capitalize()
 
-    if not self._player_manager.has_player(name):
-      player = Player(name, self._connection)
+    if not self._player_manager.player_exists(name):
+      # player = Player(name, self._connection)
+      
+      player = self._player_manager.get_player(name, self._connection)
       self._connection.player = player
-      self._player_manager.add_player(player)
       
       self._connection.leave_handler()
       self._connection.enter_handler(ChatHandler(self._connection))

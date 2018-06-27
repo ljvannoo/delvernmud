@@ -5,5 +5,5 @@ class BaseCommand(object):
   def get_name(self):
     return self._name
 
-  def execute(self, client, cmd_string):
+  def execute(self, player):
     pass

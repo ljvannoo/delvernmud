@@ -1,13 +1,25 @@
+from src.entities.player import Player
+
 class PlayerManager(object):
   class __PlayerManager(object):
     def __init__(self):
-      self._players = dict()
+      self._players = {}
 
-    def has_player(self, name):
+    def player_exists(self, name):
       return (name in self._players)
     
-    def add_player(self, player):
+    def get_player(self, player_name, connection):
+      player = Player(player_name, connection)
       self._players[player.get_name()] = player
+
+      player.add_command('quit')
+      player.add_command('who')
+      player.add_command('gossip')
+
+      return player
+
+    def get_player_names(self):
+      return self._players
 
     def send_all(self, msg):
       for name in self._players:
@@ -20,6 +32,9 @@ class PlayerManager(object):
           other_player = self._players[name]
           other_player.get_connection().send(msg)
           other_player.get_connection().handler().prompt()
+
+    def remove_player(self, player):
+      del self._players[player.get_name()]
   
   instance = None
   

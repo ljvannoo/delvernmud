@@ -4,16 +4,12 @@ import telnetlib3
 import logging
 
 from src.connection import Connection
-from src.command_interpreter import CommandInterpreter
 from src.handlers.login_handler import LoginHandler
 
 class Game(object):
   def __init__(self):
     self._connections = []
     self._loop = asyncio.get_event_loop()
-    self._command_interpreter = CommandInterpreter()
-
-    self._command_interpreter.register_command('quit')
 
   def total_connections(self):
     return len(self._connections)
@@ -55,7 +51,6 @@ class Game(object):
                .rstrip())
 
           connection.echo(cmd)
-          # self._command_interpreter.process_command(connection, cmd)
           connection.handler().handle(cmd)
 
           # await next,

@@ -2,13 +2,17 @@ import logging
 
 from src.handlers.handler import Handler
 import src.utils.vt100_codes as vt100
-from src.managers.player_manager import PlayerManager
+
 from src.entities.player import Player
+
+from src.managers.player_manager import PlayerManager
+from src.managers.command_manager import CommandManager
 
 class ChatHandler(Handler):
   def __init__(self, connection):
     super().__init__(connection)
     self._player_manager = PlayerManager()
+    self._command_manager = CommandManager()
 
   def enter(self):
     player = self._connection.player
@@ -25,11 +29,11 @@ class ChatHandler(Handler):
     self._connection.send(vt100.newline + '? ')
 
   def handle(self, cmd):
-    msg = 'You say, "' + cmd + '"' + vt100.newline
-    self._connection.send(vt100.newline + msg)
+    player = self._connection.player
 
-    msg = vt100.green + self._connection.player.get_name() + vt100.reset + ' says, "' + cmd + '"'
-    self._player_manager.send_others(self._connection.player, vt100.clearline + vt100.home + msg + vt100.newline)
-    logging.info(msg.rstrip())
+    command_executed = self._command_manager.execute(player, cmd)
+
+    if not command_executed:
+      self._connection.send(vt100.newline + 'Unknown command' + vt100.newline)
 
     self.prompt()
