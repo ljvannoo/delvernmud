@@ -50,6 +50,13 @@ class Connection(object):
 
   def set_iac(self, cmd, opt):
     return self._writer.iac(cmd, opt)
+  
+  def set_echo(self, echo):
+    from telnetlib3 import WONT, WILL, ECHO
+    if echo:
+      self.set_iac(WONT, ECHO)
+    else:
+      self.set_iac(WILL, ECHO)
 
   def close(self):
     self._writer.close()

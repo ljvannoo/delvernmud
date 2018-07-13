@@ -26,8 +26,8 @@ class Game(object):
 
   def main_loop(self, connection):
     from telnetlib3 import WONT, ECHO, SGA
-    connection.set_iac(WONT, ECHO)
     connection.set_iac(WONT, SGA)
+    connection.set_echo(True)
     readline = asyncio.ensure_future(connection.readline())
     recv_msg = asyncio.ensure_future(connection.notify_queue.get())
 
@@ -50,7 +50,7 @@ class Game(object):
           cmd = (task.result()
                .rstrip())
 
-          connection.echo(cmd)
+          # connection.echo(cmd)
           connection.handler().handle(cmd)
 
           # await next,
