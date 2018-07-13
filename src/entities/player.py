@@ -1,6 +1,6 @@
 class Player(object):
-  def __init__(self, name, connection):
-    self._name = name
+  def __init__(self, model, connection):
+    self._model = model
     self._connection = connection
     self._commands = set()
 
@@ -8,7 +8,7 @@ class Player(object):
     return '#{1}'.format(self._name)
 
   def get_name(self):
-    return self._name
+    return self._model.name
 
   def get_connection(self):
     return self._connection

@@ -1,40 +1,52 @@
 from src.entities.player import Player
+# from src.utils.exceptions import PlayerDoesNotExistException
+# from src.entities.models import PlayerModel
 
 class PlayerManager(object):
   class __PlayerManager(object):
     def __init__(self):
-      self._players = {}
+      self._connected_players = {}
 
-    def player_exists(self, name):
-      return (name in self._players)
-    
-    def get_player(self, player_name, connection):
-      player = Player(player_name, connection)
-      self._players[player.get_name()] = player
+    # def is_connected(self, player_name):
+    #   return player_name.lower() in self._connected_players
 
-      player.add_command('quit')
-      player.add_command('who')
-      player.add_command('gossip')
+    # def get_connected_player(self, player_name):
+    #   if self.is_connected(player_name):
+    #     return self._connected_players[player_name]
 
-      return player
+    #   return None
 
-    def get_player_names(self):
-      return self._players
+    # def connect_player(self, player_name, connection):
+    #   model = PlayerModel.objects.filter(name=player_name)
+    #   if not model:
+    #     raise PlayerDoesNotExistException(player_name + ' does not exist!')
 
-    def send_all(self, msg):
-      for name in self._players:
-        player = self._players[name]
-        player.get_connection().send(msg)
+    #   player = Player(model, connection)
+    #   self._connected_players[player.get_name()] = player
+
+    #   player.add_command('quit')
+    #   player.add_command('who')
+    #   player.add_command('gossip')
+
+    #   return player
+
+    # def get_player_names(self):
+    #   return self._connected_players
+
+    # def send_all(self, msg):
+    #   for name in self._connected_players:
+    #     player = self._connected_players[name]
+    #     player.get_connection().send(msg)
       
-    def send_others(self, player, msg):
-      for name in self._players:
-        if name != player.get_name():
-          other_player = self._players[name]
-          other_player.get_connection().send(msg)
-          other_player.get_connection().handler().prompt()
+    # def send_others(self, player, msg):
+    #   for name in self._connected_players:
+    #     if name != player.get_name():
+    #       other_player = self._connected_players[name]
+    #       other_player.get_connection().send(msg)
+    #       other_player.get_connection().handler().prompt()
 
-    def remove_player(self, player):
-      del self._players[player.get_name()]
+    # def remove_player(self, player):
+    #   del self._connected_players[player.get_name()]
   
   instance = None
   
