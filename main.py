@@ -23,10 +23,10 @@ def main():
     configure_log_file('bmud3')
     logging.info('******************')
     logging.info('** Server started on 127.0.0.1:6023')
-    
+
     loop = asyncio.get_event_loop()
     coro = telnetlib3.create_server(port=PORT, log=logging.getLogger(), shell=shell)
     server = loop.run_until_complete(coro)
     loop.run_until_complete(server.wait_closed())
-    
+
 main()

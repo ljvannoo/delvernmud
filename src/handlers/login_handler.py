@@ -18,7 +18,7 @@ class LoginHandler(Handler):
     self._connection.send(vt100.newline + 'Welcome to BlackPy!!'+ vt100.newline)
 
     self.prompt()
-  
+
   def prompt(self):
     if self._state == 'username':
       self._connection.send('Account name: ')
@@ -30,7 +30,7 @@ class LoginHandler(Handler):
       self.__process_username(cmd)
     elif self._state == 'password':
       self.__process_password(cmd)
-  
+
   def __process_username(self, cmd):
     name = cmd.lower().capitalize()
     self._account = self._account_manager.find_account(name)
@@ -40,7 +40,7 @@ class LoginHandler(Handler):
 
       self._state = 'password'
       self._connection.set_echo(False)
-      
+
       self.prompt()
     else:
       self._connection.send_blank_line()
@@ -57,7 +57,7 @@ class LoginHandler(Handler):
       else:
         self._connection.send_blank_line()
         self._connection.send('Incorrect password.' + vt100.newline)
-        
+
     else:
       self._state = 'username'
 

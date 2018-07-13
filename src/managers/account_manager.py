@@ -7,6 +7,7 @@ class AccountManager(object):
       pass
 
     def find_account(self, name):
+      #pylint: disable=E1101
       return Account.objects(name=name).first()
 
 

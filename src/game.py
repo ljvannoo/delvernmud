@@ -67,7 +67,7 @@ class Game(object):
 
           # show and display prompt,
           # client.current_state().prompt(msg)
-          
+
         if connection.handler() == None:
           if connection in self._connections:
             connection.close()

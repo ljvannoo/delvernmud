@@ -1,4 +1,5 @@
 from mongoengine import Document, StringField, EmailField
+#pylint: disable=E0611
 from hashlib import sha3_512
 
 class Account(Document):
