@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
+
+from mongoengine import connect
+
 import logging  # https://docs.python.org/3/howto/logging.html
 import asyncio, telnetlib3 # https://telnetlib3.readthedocs.io/en/latest/
+
 
 from src.utils.custom_logging import configure_log_file
 from src.game import Game
 
 PORT = 6023
 game = Game()
+
+connect('blackpy')
 
 def shell(reader, writer):
     global game
