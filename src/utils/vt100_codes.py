@@ -25,3 +25,6 @@ bg_magenta = '\x1b[45m'
 bg_cyan = '\x1b[46m'
 bg_white = '\x1b[47m'
 newline = '\r\n' + reset
+
+def style_name(name):
+  return green + name + reset
