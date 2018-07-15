@@ -7,12 +7,11 @@ import asyncio, telnetlib3 # https://telnetlib3.readthedocs.io/en/latest/
 
 
 from src.utils.custom_logging import configure_log_file
+from src.utils.properties import Properties
 from src.game import Game
 
-PORT = 6023
+PORT = None
 game = Game()
-
-connect('blackpy')
 
 def shell(reader, writer):
     global game
@@ -20,13 +19,22 @@ def shell(reader, writer):
         yield from game.main_loop(client)
 
 def main():
-    configure_log_file('bmud3')
+    props = Properties()
+    props.init_props('properties.yml')
+
+    configure_log_file(props.get('log.prefix'))
     logging.info('******************')
-    logging.info('** Server started on 127.0.0.1:6023')
+
+    connect(props.get('db.database'), host='mongodb://' + props.get('db.user') + ':' + props.get('db.password') + '@' + props.get('db.host'))
+    logging.info('Connected to database')
+    logging.info('Host: %s', props.get('db.host'))
+    logging.info('Database: %s', props.get('db.database'))
+    logging.info('User: %s', props.get('db.user'))
 
     loop = asyncio.get_event_loop()
-    coro = telnetlib3.create_server(port=PORT, log=logging.getLogger(), shell=shell)
+    coro = telnetlib3.create_server(port=props.get('server.port'), log=logging.getLogger(), shell=shell)
     server = loop.run_until_complete(coro)
+    logging.info('Server started on 127.0.0.1:' + str(props.get('server.port')))
     loop.run_until_complete(server.wait_closed())
 
 main()
