@@ -4,26 +4,27 @@ from src.handlers.chat_handler import ChatHandler
 import src.utils.vt100_codes as vt100
 from src.managers.account_manager import AccountManager
 from src.utils.exceptions import AccountDoesNotExistException
-
-salt = b'\x1cE\xaa\xefQ\xaa\xee\x856\x95W\xde\x167\x1d\xc8\x0b\x02\x8a\xe8\xb18\x8c\xb6\x95\x8e\x9c\xf5\xbd\x9eq.'
+from src.utils.properties import Properties
 
 class LoginHandler(Handler):
   def __init__(self, connection):
     super().__init__(connection)
+    self._props = Properties()
     self._account_manager = AccountManager()
     self._state = 'username'
     self._account = None
+    self._salt = bytes(self._props.get('server.salt'), 'utf-8')
 
   def enter(self):
-    self._connection.send(vt100.newline + 'Welcome to BlackPy!!'+ vt100.newline)
+    self._connection.send(vt100.newline + self._props.get('messages.login.welcome') + vt100.newline)
 
     self.prompt()
 
   def prompt(self):
     if self._state == 'username':
-      self._connection.send('Account name: ')
+      self._connection.send(self._props.get('messages.login.accountPrompt') + ' ')
     elif self._state == 'password':
-      self._connection.send('Password: ')
+      self._connection.send(self._props.get('messages.login.passwordPrompt') + ' ')
 
   def handle(self, cmd):
     if self._state == 'username':
@@ -50,7 +51,7 @@ class LoginHandler(Handler):
 
   def __process_password(self, cmd):
     if self._account:
-      new_hash = self._account.hash(salt, cmd)
+      new_hash = self._account.hash(self._salt, cmd)
       if new_hash == self._account.password_hash:
         logging.info(vt100.style_name(self._account.name) + ' logged in')
         self._connection.set_echo(True)

@@ -31,6 +31,8 @@ def main():
     logging.info('Database: %s', props.get('db.database'))
     logging.info('User: %s', props.get('db.user'))
 
+    props.load_config()
+
     loop = asyncio.get_event_loop()
     coro = telnetlib3.create_server(port=props.get('server.port'), log=logging.getLogger(), shell=shell)
     server = loop.run_until_complete(coro)

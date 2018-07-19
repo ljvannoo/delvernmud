@@ -1,10 +1,15 @@
 import yaml
 
+from mongoengine import Document, StringField
+
+class Config(Document):
+  # id
+  key = StringField(max_length=64, required=True, unique=True)
+  value = StringField(max_length=20248, required=True)
+
+
 class Properties(object):
   class __Properties(object):
-    def __init__(self):
-        pass
-
     def init_props(self, filename):
         with open(filename, 'r') as stream:
             try:
@@ -12,14 +17,32 @@ class Properties(object):
             except yaml.YAMLError as exc:
                 print(exc)
 
+    def load_config(self):
+        items = Config.objects
+        for item in items:
+            keys = item.key.split('.')
+            self.__insert_prop(keys, self._props, item.value)
+
     def get(self, propName):
         keys = propName.split('.')
         return self.__find_prop(keys, self._props)
 
+    def __insert_prop(self, keys, props, value):
+        key = keys.pop(0)
+        if len(keys) == 0:
+            props[key] = value
+        else:
+            if not key in props:
+                props[key] = {}
+            self.__insert_prop(keys, props[key], value)
+
     def __find_prop(self, keys, props):
         key = keys.pop(0)
-        if(len(keys) == 0):
-            return props[key]
+        if len(keys) == 0:
+            if key in props:
+                return props[key]
+            else:
+                return None
         return self.__find_prop(keys, props[key])
 
 
