@@ -12,5 +12,5 @@ class Account(Document):
     hasher = sha3_512()
     hasher.update(salt)
     hasher.update(bytes(password, 'utf-8'))
-    
+
     return hasher.hexdigest()

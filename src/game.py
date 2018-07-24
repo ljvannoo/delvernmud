@@ -5,6 +5,7 @@ import logging
 
 from src.connection import Connection
 from src.handlers.login_handler import LoginHandler
+import src.utils.vt100_codes as vt100
 
 class Game(object):
   def __init__(self):
@@ -51,6 +52,7 @@ class Game(object):
                .rstrip())
 
           # connection.echo(cmd)
+          connection.send(vt100.home)
           connection.handler().handle(cmd)
 
           # await next,
@@ -72,7 +74,6 @@ class Game(object):
           if connection in self._connections:
             connection.close()
             break
-
     finally:
       for task in wait_for:
         task.cancel()

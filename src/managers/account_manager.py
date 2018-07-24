@@ -11,9 +11,9 @@ class AccountManager(object):
       return Account.objects(name=name).first()
 
 
-# ----------------------------------------------------------------------    
+# ----------------------------------------------------------------------
   instance = None
-  
+
   def __new__(cls):
     if not AccountManager.instance:
       AccountManager.instance = AccountManager.__AccountManager()
@@ -21,6 +21,6 @@ class AccountManager(object):
 
   def __getattr__(self, name):
     return getattr(self.instance, name)
-  
+
   def __setattr__(self, name, value):
     return setattr(self.instance, name, value)
