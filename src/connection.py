@@ -13,14 +13,14 @@ class Connection(object):
 
   def __str__(self):
     return '#{1}'.format(self.get_id())
-  
+
   def get_id(self):
     return self._id
 
   def handler(self):
     if not len(self._handler_stack):
       return None
-      
+
     return self._handler_stack[len(self._handler_stack)-1]
 
   def enter_handler(self, new_state):
@@ -30,18 +30,23 @@ class Connection(object):
   def leave_handler(self):
     current_handler = self._handler_stack.pop()
     current_handler.leave()
+    self.handler().enter()
 
   def hang_up(self):
     current_handler = self.handler()
     self._handler_stack = []
     current_handler.hang_up()
+    self.close()
 
   def send(self, msg):
     self._writer.write(msg)
-  
+
+  def send_line(self, msg):
+    self._writer.write(msg + vt100.newline)
+
   def send_blank_line(self):
     self._writer.write(vt100.newline)
-  
+
   def echo(self, msg):
     self._writer.echo(msg)
 
@@ -50,7 +55,7 @@ class Connection(object):
 
   def set_iac(self, cmd, opt):
     return self._writer.iac(cmd, opt)
-  
+
   def set_echo(self, echo):
     from telnetlib3 import WONT, WILL, ECHO
     if echo:
@@ -60,4 +65,4 @@ class Connection(object):
 
   def close(self):
     self._writer.close()
-    
+
