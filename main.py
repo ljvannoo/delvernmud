@@ -34,7 +34,7 @@ def main():
     props.load_config()
 
     loop = asyncio.get_event_loop()
-    coro = telnetlib3.create_server(port=props.get('server.port'), log=logging.getLogger(), shell=shell)
+    coro = telnetlib3.create_server(port=props.get('server.port'), log=logging.getLogger(), shell=shell, timeout=0)
     server = loop.run_until_complete(coro)
     logging.info('Server started on 127.0.0.1:' + str(props.get('server.port')))
     loop.run_until_complete(server.wait_closed())
