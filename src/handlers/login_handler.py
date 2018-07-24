@@ -1,6 +1,6 @@
 import logging
 from src.handlers.handler import Handler
-from src.handlers.chat_handler import ChatHandler
+from src.handlers.select_character import SelectCharacterHandler
 import src.utils.vt100_codes as vt100
 from src.managers.account_manager import AccountManager
 from src.utils.exceptions import AccountDoesNotExistException
@@ -37,7 +37,7 @@ class LoginHandler(Handler):
     self._account = self._account_manager.find_account(name)
 
     if self._account:
-      self._connection.send(vt100.home + vt100.reset)
+      # self._connection.send(vt100.home + vt100.reset)
 
       self._state = 'password'
       self._connection.set_echo(False)
@@ -55,6 +55,9 @@ class LoginHandler(Handler):
       if new_hash == self._account.password_hash:
         logging.info(vt100.style_name(self._account.name) + ' logged in')
         self._connection.set_echo(True)
+
+        self._connection.enter_handler(SelectCharacterHandler(self._connection, self._account))
+        return
       else:
         self._connection.send_blank_line()
         self._connection.send('Incorrect password.' + vt100.newline)
