@@ -1,7 +1,17 @@
-from mongoengine import Document, StringField, ObjectIdField
+from mongoengine import Document, StringField, ListField, ObjectIdField
+import src.entities.entity as entity
 
-class Character(Document):
-  # id
-  name = StringField(max_length=128, required=True, unique=True)
-  accountId = ObjectIdField(db_field='accountId')
-  room_id = ObjectIdField(db_field='roomId')
+class Character(
+    entity.LogicEntity,
+    entity.HasData,
+    entity.HasRoom,
+    entity.HasRegion,
+    entity.HasTemplate,
+    entity.HasItems):
+
+  account_id = ObjectIdField(db_field='accountId')
+  commands = ListField(StringField())
+  
+  meta: {
+    'collection': 'character'
+  }

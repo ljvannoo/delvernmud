@@ -3,18 +3,28 @@ from src.entities.room import Room
 class RoomManager(object):
   class __RoomManager(object):
     def __init__(self):
-      pass
+      self._active_rooms = {}
 
     def find_by_id(self, id):
-      return Room.objects(id=id)
+      room = Room.objects(id=id)
+      self._active_rooms[room.id] = room
+      return room
 
     def find_by_coordinates(self, x, y, z):
       #pylint: disable=E1101
-      return Room.objects(coordinates__x=x, coordinates__y=y, coordinates__z=z).first()
+      room = Room.objects(coordinates__x=x, coordinates__y=y, coordinates__z=z).first()
+      self._active_rooms[room.id] = room
+      return room
 
     def find_by_region(self, region_id):
       #pylint: disable=E1101
       return Room.objects(region_id=region_id)
+
+    def get_room(self, room_id):
+      if room_id in self._active_rooms:
+        return self._active_rooms[room_id]
+      else:
+        return None
 
 # ----------------------------------------------------------------------
   instance = None

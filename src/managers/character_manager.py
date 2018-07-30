@@ -3,7 +3,7 @@ from src.entities.character import Character
 class CharacterManager(object):
   class __CharacterManager(object):
     def __init__(self):
-      pass
+      self._active_characters = {}
 
     def find_by_name(self, name):
       #pylint: disable=E1101
@@ -12,6 +12,12 @@ class CharacterManager(object):
     def find_by_account(self, account_ref):
       #pylint: disable=E1101
       return Character.objects(accountId=account_ref)
+
+    def get_character(self, character_id):
+      if character_id in self._active_characters:
+        return self._active_characters[character_id]
+      else:
+        return None
 
 # ----------------------------------------------------------------------
   instance = None

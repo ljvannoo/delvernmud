@@ -1,7 +1,16 @@
 from mongoengine import Document, StringField, ListField, ObjectIdField, IntField
+import src.entities.entity as entity
 
-class Region(Document):
-  ref_id = IntField(unique=True, db_field='refId')
-  name = StringField(max_length=128)
+class Region(
+    entity.LogicEntity, 
+    entity.HasData, 
+    entity.HasCharacters, 
+    entity.HasItems, 
+    entity.HasRooms, 
+    entity.HasPortals):
+
   keywords = StringField(max_length=128)
-  roomIds = ListField(ObjectIdField(), db_field='roomIds')
+
+  meta: {
+    'collection': 'region'
+  }
