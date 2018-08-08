@@ -9,6 +9,7 @@ class Character(
     entity.HasTemplate,
     entity.HasItems):
 
+  logged_in = False
   account_id = ObjectIdField(db_field='accountId')
   commands = ListField(StringField())
   

@@ -10,20 +10,24 @@ class Entity(Document):
 
 class LogicEntity(Entity):
   logic_data = DictField(db_field='logic_data')
-  
+
   meta = {'allow_inheritance': True}
 
   def get_logic(self, name):
     return self.logic_data[name]
 
-  # TODO: Overloading doesn't work this way in Python...
   def do_action(self, action):
-    pass
+    for logic in self.logic_data:
+      result = logic.do_action(action)
+      if result != None:
+        return result
 
-  def do_action(self, action_type, entities, data_string):
+    return None
+
+  def do_action_helper(self, action_type, entities, data_string):
     action = Action(action_type, entities, data_string)
     self.do_action(action)
-    
+
 class HasData(Document):
   data = DictField(db_field='data')
 
@@ -36,12 +40,12 @@ class HasRegion(Document):
 
 class HasRoom(Document):
   room_id = region_id = ObjectIdField(db_field='roomId')
-  
+
   meta = {'allow_inheritance': True}
 
 class HasRooms(Document):
   room_ids = ListField(ObjectIdField(), db_field='roomIds')
-  
+
   meta = {'allow_inheritance': True}
 
 class HasTemplate(Document):
@@ -53,6 +57,12 @@ class HasCharacters(Document):
   character_ids = ListField(ObjectIdField(), db_field='characterids')
   
   meta = {'allow_inheritance': True}
+
+  def add_character(self, character):
+    self.character_ids.append(character.id)
+
+  def remove_character(self, character):
+    self.character_ids.remove(character.id)
 
 class HasItems(Document):
   item_ids = ListField(ObjectIdField(), db_field='itemIds')

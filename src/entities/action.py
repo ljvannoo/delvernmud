@@ -8,10 +8,11 @@ class EntityType(Enum):
   REGION = 4
 
 class Action(object):
-  def __init__(self, action_type, entities, data_string=None):
+  def __init__(self, action_type, entities, data_string=None, data_key=None):
     self._action_type = action_type
     self.entities = entities
     self.data_string = data_string
+    self.data_key = data_key
 
 class TimedAction(object):
   def __init__(self, time=None, action=None):
@@ -24,7 +25,7 @@ class TimedAction(object):
 
   def get_action(self):
     return self._action
-    
+
   def __eq__(self, other):
     return self.get_execution_time() == other.get_execution_time()
 
@@ -36,9 +37,9 @@ class TimedAction(object):
 
   def __le__(self, other):
     return self.get_execution_time() <= other.get_execution_time()
-    
+
   def __gt__(self, other):
-    return self.get_execution_time() > other.get_execution_time() 
+    return self.get_execution_time() > other.get_execution_time()
 
   def __ge__(self, other):
     return self.get_execution_time() >= other.get_execution_time()
