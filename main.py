@@ -11,7 +11,7 @@ from src.utils.properties import Properties
 from src.game import Game
 
 PORT = None
-game = Game()
+game = None
 
 def shell(reader, writer):
     global game
@@ -19,6 +19,7 @@ def shell(reader, writer):
         yield from game.main_loop(client)
 
 def main():
+    global game
     props = Properties()
     props.init_props('properties.yml')
 
@@ -32,6 +33,8 @@ def main():
     logging.info('User: %s', props.get('db.user'))
 
     props.load_config()
+
+    game = Game()
 
     loop = asyncio.get_event_loop()
     coro = telnetlib3.create_server(port=props.get('server.port'), log=logging.getLogger(), shell=shell, timeout=0)

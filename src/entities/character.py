@@ -9,10 +9,13 @@ class Character(
     entity.HasTemplate,
     entity.HasItems):
 
+  def __init__(self, *args, **kwargs):
+    super(Document, self).__init__(*args, **kwargs)
+
   logged_in = False
   account_id = ObjectIdField(db_field='accountId')
   commands = ListField(StringField())
-  
+
   meta: {
     'collection': 'character'
   }

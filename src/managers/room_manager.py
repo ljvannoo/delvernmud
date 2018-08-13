@@ -6,6 +6,7 @@ class RoomManager(object):
       self._active_rooms = {}
 
     def find_by_id(self, id):
+      #pylint: disable=E1101
       room = Room.objects(id=id)
       self._active_rooms[room.id] = room
       return room
@@ -21,10 +22,11 @@ class RoomManager(object):
       return Room.objects(region_id=region_id)
 
     def get_room(self, room_id):
-      if room_id in self._active_rooms:
-        return self._active_rooms[room_id]
-      else:
+      if not room_id:
         return None
+
+      #pylint: disable=E1101
+      return Room.objects(id=room_id)[0]
 
 # ----------------------------------------------------------------------
   instance = None

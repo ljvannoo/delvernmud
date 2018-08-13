@@ -1,30 +1,25 @@
 from src.handlers.handler import Handler
 import src.utils.vt100_codes as vt100
-from src.managers.room_manager import RoomManager
+from src.managers.game_manager import GameManager
+from src.entities.action import Action
+from src.scripts.telnet_reporter import TelnetReporter
 
 class GameHandler(Handler):
   def __init__(self, connection, character):
     super().__init__(connection)
     self._character = character
-    self._room_manager = RoomManager()
+    self._game_manager = GameManager()
 
   def enter(self):
-    room = None
+    self._character.add_existing_logic(TelnetReporter(self._character.id, self._connection))
 
-    if not self._character.room_id:
-      room = self._room_manager.find_by_coordinates(0, 0, 0)
-      self._character.room_id = room.id
-      self._character.save()
-    else:
-      room = self._room_manager.find_by_id(self._character.room_id)
-
-    self._connection.send_line(vt100.cyan + room.name)
-    self._connection.send_line(room.description)
-
-    self.prompt()
+    self._game_manager.do_action(Action('enterrealm', character_id=self._character.id))
 
   def hang_up(self):
     self._connection.send(vt100.newline + vt100.bg_magenta + 'Goodbye!' + vt100.newline)
+
+  def handle(self, cmd_string):
+    self._game_manager.do_action(Action('command', character_id=self._character.id, data={'cmd': cmd_string}))
 
   def prompt(self):
     self._connection.send(vt100.newline + vt100.red + '? ' + vt100.reset)

@@ -24,7 +24,8 @@ class CreateCharacterHandler(Handler):
     if self.__validate_name(name):
       character = Character()
       character.name = name
-      character.accountId = self._account.id
+      character.account_id = self._account.id
+      print('Character name: {0}'.format(character.name))
       character.save()
       self._connection.leave_handler()
 

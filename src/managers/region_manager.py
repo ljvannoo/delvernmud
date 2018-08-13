@@ -5,17 +5,12 @@ class RegionManager(object):
     def __init__(self):
       self._active_regions = {}
 
-    def find_by_id(self, id):
-      region = Region.objects(id=id)
-      self._active_regions[region.id] = region
-      return region
-
     def get_region(self, region_id):
-      self.find_by_id(region_id)
-      if region_id in self._active_regions:
-        return self._active_regions[region_id]
-      else:
+      if not region_id:
         return None
+
+      #pylint: disable=E1101
+      return Region.objects(id=region_id)[0]
 
 # ----------------------------------------------------------------------
   instance = None

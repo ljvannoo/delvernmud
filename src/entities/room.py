@@ -21,6 +21,10 @@ class Room(
     entity.HasCharacters,
     entity.HasItems,
     entity.HasPortals):
+
+  def __init__(self, *args, **kwargs):
+    super(Document, self).__init__(*args, **kwargs)
+
   coordinates = EmbeddedDocumentField(Coordinate)
 
   meta: {

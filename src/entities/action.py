@@ -8,11 +8,18 @@ class EntityType(Enum):
   REGION = 4
 
 class Action(object):
-  def __init__(self, action_type, entities, data_string=None, data_key=None):
-    self._action_type = action_type
-    self.entities = entities
-    self.data_string = data_string
-    self.data_key = data_key
+  def __init__(self, action_type, target_type=None, region_id=None, room_id=None, portal_id=None, character_id=None, other_character_id=None, item_id=None, quantity=None, template_id=None, data=None):
+    self.action_type = action_type
+    self.target_type = target_type
+    self.region_id = region_id
+    self.room_id = room_id
+    self.portal_id = portal_id
+    self.character_id = character_id
+    self.other_character_id = other_character_id
+    self.item_id = item_id
+    self.quantity = quantity
+    self.template_id = template_id
+    self.data = data
 
 class TimedAction(object):
   def __init__(self, time=None, action=None):

@@ -11,7 +11,7 @@ class CharacterManager(object):
 
     def find_by_account(self, account_ref):
       #pylint: disable=E1101
-      return Character.objects(accountId=account_ref)
+      return Character.objects(account_id=account_ref)
 
     def get_character(self, character_id):
       # if character_id in self._active_characters:
@@ -19,11 +19,11 @@ class CharacterManager(object):
       # else:
       #   return None
 
-      #pylint: disable=E1101
       if not character_id:
         return None
-
-      return Character.objects(id=character_id)
+        
+      #pylint: disable=E1101
+      return Character.objects(id=character_id)[0]
 
 # ----------------------------------------------------------------------
   instance = None

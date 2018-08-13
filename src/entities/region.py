@@ -9,6 +9,9 @@ class Region(
     entity.HasRooms,
     entity.HasPortals):
 
+  def __init__(self, *args, **kwargs):
+    super(Document, self).__init__(*args, **kwargs)
+
   keywords = StringField(max_length=128)
 
   meta: {
