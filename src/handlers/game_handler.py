@@ -14,6 +14,7 @@ class GameHandler(Handler):
     self._character.add_existing_logic(TelnetReporter(self._character.id, self._connection))
 
     self._game_manager.do_action(Action('enterrealm', character_id=self._character.id))
+    self._character.do_action(Action('seeroom', character_id=self._character.id, room_id=self._character.room_id))
 
   def hang_up(self):
     self._connection.send(vt100.newline + vt100.bg_magenta + 'Goodbye!' + vt100.newline)
