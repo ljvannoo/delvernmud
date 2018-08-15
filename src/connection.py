@@ -1,5 +1,6 @@
 from enum import Enum
 import src.utils.vt100_codes as vt100
+import src.utils.string_utils as string_utils
 
 class Connection(object):
   def __init__(self, reader, writer, notify_queue):
@@ -38,17 +39,22 @@ class Connection(object):
     current_handler.hang_up()
     self.close()
 
-  def send(self, msg):
-    self._writer.write(msg)
+  def send(self, msg, indent=False, wrap=False):
+    new_msg = self.__translate_colors(msg)
+    if wrap:
+      new_msg = string_utils.wrap(new_msg, indent=indent)
 
-  def send_line(self, msg):
-    self._writer.write(msg + vt100.newline)
+    self._writer.write(new_msg)
+
+  def send_line(self, msg, indent=False, wrap=False):
+    self.send(msg, indent=indent, wrap=wrap)
+    self.send_blank_line()
 
   def send_blank_line(self):
     self._writer.write(vt100.newline)
 
   def echo(self, msg):
-    self._writer.echo(msg)
+    self._writer.echo(self.__translate_colors(msg))
 
   def readline(self):
     return self._reader.readline()
@@ -66,3 +72,55 @@ class Connection(object):
   def close(self):
     self._writer.close()
 
+  def __translate_colors(self, msg):
+    index = msg.find('<')
+    new_msg = msg
+
+    while index >= 0:
+      end_index = new_msg.find('>')
+      if end_index >= 0:
+        type_indicator = new_msg[index + 1]
+        if type_indicator == '$':
+          new_msg = self.__translate_string_color(index, end_index, new_msg)
+        elif type_indicator == '#':
+          new_msg = self.__translate_number_color(index, end_index, new_msg)
+      index = new_msg.find('<', index + 1)
+
+    return new_msg
+
+  def __translate_string_color(self, start_index, end_index, msg):
+    color_tag = msg[start_index:end_index+1]
+    vt100_color = None
+
+    if color_tag == '<$black>':
+      vt100_color = vt100.black
+    elif color_tag == '<$red>':
+      vt100_color = vt100.red
+    elif color_tag == '<$green>':
+      vt100_color = vt100.green
+    elif color_tag == '<$yellow>':
+      vt100_color = vt100.yellow
+    elif color_tag == '<$blue>':
+      vt100_color = vt100.blue
+    elif color_tag == '<$magenta>':
+      vt100_color = vt100.magenta
+    elif color_tag == '<$cyan>':
+      vt100_color = vt100.cyan
+    elif color_tag == '<$white>':
+      vt100_color = vt100.white
+    elif color_tag == '<$bold>':
+      vt100_color = vt100.bold
+    elif color_tag == '<$dim>':
+      vt100_color = vt100.dim
+    elif color_tag == '<$reset>':
+      vt100_color = vt100.reset
+    elif color_tag == '<$nl>':
+      vt100_color = vt100.newline
+
+    if vt100_color:
+      return msg.replace(color_tag, vt100_color)
+
+    return msg
+
+  def __translate_number_color(self, start_index, end_index, msg):
+    return msg #TODO
