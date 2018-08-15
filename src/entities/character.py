@@ -19,3 +19,13 @@ class Character(
   meta: {
     'collection': 'character'
   }
+
+  def find_command(self, cmd_name: str):
+    for command in self.commands:
+      if command == cmd_name:
+        return command
+
+    for command in self.commands:
+      if command.startswith(cmd_name):
+        return command
+    return None

@@ -10,3 +10,19 @@ def wrap(msg, indent=False):
 
 def indent(msg):
   return '  ' + msg
+
+def parse_word(msg):
+  index = msg.find(' ')
+
+  if index > 0:
+    return msg[:index]
+
+  return msg
+
+def remove_word(msg):
+  word = parse_word(msg)
+
+  if word:
+    return msg.replace(word, '').lstrip()
+
+  return msg

@@ -22,6 +22,8 @@ class TelnetReporter(Logic):
     elif action.action_type == 'seeroom':
       if action.character_id and action.character_id == self._character_id:
         self.__see_room(self._room_manager.get_room(action.room_id))
+    elif action.action_type == 'error':
+      self._connection.send_line('<$bold><$red>' + action.data['msg'])
 
   def __send_line(self, msg, indent=False, wrap=False):
     self._connection.send_line(msg, indent, wrap)

@@ -51,7 +51,7 @@ class LoginHandler(Handler):
     if self._account:
       new_hash = self._account.hash(self._salt, cmd)
       if new_hash == self._account.password_hash:
-        logging.info(vt100.style_name(self._account.name) + ' logged in')
+        logging.info(self._account.name + ' logged in')
         self._connection.set_echo(True)
 
         self._connection.enter_handler(SelectCharacterHandler(self._connection, self._account))

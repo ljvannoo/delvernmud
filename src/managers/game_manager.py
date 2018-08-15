@@ -1,5 +1,8 @@
 import time
 import queue
+import logging
+
+import src.utils.string_utils as string_utils
 
 from src.entities.action import TimedAction, Action, EntityType
 from src.managers.region_manager import RegionManager
@@ -7,6 +10,7 @@ from src.managers.room_manager import RoomManager
 from src.managers.portal_manager import PortalManager
 from src.managers.character_manager import CharacterManager
 from src.managers.item_manager import ItemManager
+from src.managers.command_manager import CommandManager
 
 class GameManager(object):
   class __GameManager(object):
@@ -23,6 +27,7 @@ class GameManager(object):
       self._portal_manager = PortalManager()
       self._character_manager = CharacterManager()
       self._item_manager = ItemManager()
+      self._command_manager = CommandManager()
 
       self._connected_characters = []
 
@@ -76,6 +81,7 @@ class GameManager(object):
           self.do_action(timed_action.get_action())
 
     def do_action(self, action):
+      # logging.info('Game recieved action: ' + action.action_type)
       if action.action_type == 'chat' or action.action_type == 'announce':
         self.__action_to_realm_players(action)
       elif action.action_type == "do":
@@ -90,8 +96,8 @@ class GameManager(object):
         self.__logout(action.character_id)
       elif action.action_type == 'attemptsay':
         self.__say(action.character_id, action.data['msg'])
-      # elif action.action_type == 'command':
-      #   self.__do_command(action.character_id, action.data['command']) # TODO: WORKING
+      elif action.action_type == 'command':
+        self.__do_command(action.character_id, action.data['cmd']) # TODO: WORKING
       elif action.action_type == 'attemptenterportal':
         self.__enter_portal(action.character_id, action.portal_id) # TODO
       elif action.action_type == 'attempttransport':
@@ -350,6 +356,21 @@ class GameManager(object):
       # Do rooms have multiple portals?
       # Do portals have multiple paths with the same direction name?
       paths = portal.find_paths_by_start_room(portal)
+
+    def __do_command(self, character_id: str, cmd_string: str):
+      character = self._character_manager.get_character(character_id)
+
+      cmd_name = string_utils.parse_word(cmd_string)
+      params = string_utils.remove_word(cmd_string)
+
+      # logging.info('{0} is attempting to execute \'{1}\' with parameters \'{2}\''.format(character.name, cmd_name, params))
+
+      full_command_name = character.find_command(cmd_name)
+      if full_command_name:
+        command = self._command_manager.get(full_command_name)
+        command.execute(character, params)
+      else:
+        character.do_action(Action("error", data={'msg': 'Unrecognized command: {0}'.format(cmd_name)}))
 
 
 # ----------------------------------------------------------------------
