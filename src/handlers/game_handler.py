@@ -15,14 +15,11 @@ class GameHandler(Handler):
 
     self._game_manager.do_action(Action('enterrealm', character_id=self._character.id))
     self._character.do_action(Action('seeroom', character_id=self._character.id, room_id=self._character.room_id))
-    self.prompt()
+    # self.prompt()
 
   def hang_up(self):
     self._connection.send(vt100.newline + vt100.bg_magenta + 'Goodbye!' + vt100.newline)
 
   def handle(self, cmd_string):
     self._game_manager.do_action(Action('command', character_id=self._character.id, data={'cmd': cmd_string.strip()}))
-    self.prompt()
-
-  def prompt(self):
-    self._connection.send('<$nl><$red>?<$reset> ')
+    # self.prompt()

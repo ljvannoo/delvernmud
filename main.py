@@ -9,6 +9,7 @@ import asyncio, telnetlib3 # https://telnetlib3.readthedocs.io/en/latest/
 from src.utils.custom_logging import configure_log_file
 from src.utils.properties import Properties
 from src.game import Game
+from src.managers.game_manager import GameManager
 
 PORT = None
 game = None
@@ -35,11 +36,13 @@ def main():
     props.load_config()
 
     game = Game()
+    game_manager = GameManager()
 
     loop = asyncio.get_event_loop()
     coro = telnetlib3.create_server(port=props.get('server.port'), log=logging.getLogger(), shell=shell, timeout=0)
     server = loop.run_until_complete(coro)
     logging.info('Server started on 127.0.0.1:' + str(props.get('server.port')))
+    loop.call_later(1, game_manager.execute_timed_actions)
     loop.run_until_complete(server.wait_closed())
 
 main()

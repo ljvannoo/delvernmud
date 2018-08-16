@@ -1,6 +1,7 @@
 import time
 import queue
 import logging
+import asyncio
 
 import src.utils.string_utils as string_utils
 
@@ -30,6 +31,9 @@ class GameManager(object):
       self._command_manager = CommandManager()
 
       self._connected_characters = []
+
+    def get_connected_characters(self):
+      return self._connected_characters
 
     def __update_time(self):
       if self._last_query_time:
@@ -79,6 +83,7 @@ class GameManager(object):
 
         if timed_action.valid:
           self.do_action(timed_action.get_action())
+      asyncio.get_event_loop().call_later(.1, self.execute_timed_actions)
 
     def do_action(self, action):
       # logging.info('Game recieved action: ' + action.action_type)

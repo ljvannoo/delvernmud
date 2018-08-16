@@ -4,8 +4,9 @@ class CommandManager(object):
       self._commands = {}
 
       self.register_command('look')
-      # self.register_command('who')
-      # self.register_command('gossip')
+      self.register_command('quit')
+      self.register_command('who')
+      self.register_command('gossip')
 
     def register_command(self, cmd_name):
       module_name = 'src.commands.cmd_' + cmd_name

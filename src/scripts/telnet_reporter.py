@@ -15,15 +15,30 @@ class TelnetReporter(Logic):
     self._connection = connection
 
   def do_action(self, action):
-    # logging.info('Character {0} recieved action: type={1}'.format(self._character_id, action.action_type))
+    logging.info('Character {0} recieved action: type={1}'.format(self._character_id, action.action_type))
     if action.action_type == 'enterrealm':
       character = self._character_manager.get_character(self._character_id)
       self.__send_line('{0} enters the realm.<$nl>'.format(character.name))
     elif action.action_type == 'seeroom':
       if action.character_id and action.character_id == self._character_id:
         self.__see_room(self._room_manager.get_room(action.room_id))
+      self.prompt()
     elif action.action_type == 'error':
       self._connection.send_line('<$bold><$red>' + action.data['msg'])
+      self.prompt()
+    elif action.action_type == 'leave':
+      self._connection.leave_handler()
+      self.prompt()
+    elif action.action_type == 'announce':
+      self._connection.send(action.data['msg'])
+      self.prompt()
+    elif action.action_type == 'chat':
+      character = self._character_manager.get_character(self._character_id)
+      self._connection.send_line('<$nl><$dim><$yellow>{0} gossips, "{1}"<$reset>'.format(character.name, action.data['msg']))
+      self.prompt()
+
+  def prompt(self):
+    self._connection.send('<$nl><$red>?<$reset> ')
 
   def __send_line(self, msg, indent=False, wrap=False):
     self._connection.send_line(msg, indent, wrap)

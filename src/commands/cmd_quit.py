@@ -1,13 +1,13 @@
-from src.commands.base_command import BaseCommand
-from src.managers.player_manager import PlayerManager
+import logging
 
-class QuitCommand(BaseCommand):
-  def __init__(self):
-    super().__init__('quit')
-    self._player_manager = PlayerManager()
+from src.commands.command import Command
+from src.entities.action import Action
+from src.entities.character import Character
 
-  def execute(self, player, param_string=''):
-    self._player_manager.remove_player(player)
-    player.get_connection().hang_up()
-    
-    return True
+class CmdQuit(Command):
+  name = 'quit'
+  usage = 'look'
+  description = 'Removes you from the game and takes you back to the game menu.'
+
+  def execute(self, character: Character, param_string: str):
+    character.do_action(Action('leave', character_id=character.id))
