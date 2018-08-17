@@ -15,7 +15,7 @@ class TelnetReporter(Logic):
     self._connection = connection
 
   def do_action(self, action):
-    logging.info('Character {0} recieved action: type={1}'.format(self._character_id, action.action_type))
+    # logging.info('Character {0} recieved action: type={1}'.format(self._character_id, action.action_type))
     if action.action_type == 'enterrealm':
       character = self._character_manager.get_character(self._character_id)
       self.__send_line('{0} enters the realm.<$nl>'.format(character.name))
