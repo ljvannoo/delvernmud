@@ -1,4 +1,4 @@
-from src.entities.character import Character
+from src.entities.character import Character, CharacterTemplate
 
 class CharacterManager(object):
   class __CharacterManager(object):
@@ -14,16 +14,20 @@ class CharacterManager(object):
       return Character.objects(account_id=account_ref)
 
     def get_character(self, character_id):
-      # if character_id in self._active_characters:
-      #   return self._active_characters[character_id]
-      # else:
-      #   return None
+      if character_id:
+        #pylint: disable=E1101
+        characters = Character.objects(id=character_id)
+        if characters:
+          return characters[0]
+      return None
 
-      if not character_id:
-        return None
-        
-      #pylint: disable=E1101
-      return Character.objects(id=character_id)[0]
+    def get_template(self, template_id):
+      if template_id:
+        #pylint: disable=E1101
+        templates = CharacterTemplate.objects(id=template_id)
+        if templates:
+          return templates[0]
+      return None
 
 # ----------------------------------------------------------------------
   instance = None
