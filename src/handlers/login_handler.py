@@ -1,6 +1,6 @@
 import logging
 from src.handlers.handler import Handler
-from src.handlers.select_character import SelectCharacterHandler
+from src.handlers.main_menu_handler import MainMenuHandler
 import src.utils.vt100_codes as vt100
 from src.managers.account_manager import AccountManager
 from src.utils.exceptions import AccountDoesNotExistException
@@ -54,7 +54,7 @@ class LoginHandler(Handler):
         logging.info(self._account.name + ' logged in')
         self._connection.set_echo(True)
 
-        self._connection.enter_handler(SelectCharacterHandler(self._connection, self._account))
+        self._connection.enter_handler(MainMenuHandler(self._connection, self._account))
         return
       else:
         self._connection.send_blank_line()

@@ -1,0 +1,61 @@
+  __~__                                                            __~__
+ ( ___ )                                                          ( ___ )
+  |   |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|   |
+  |   |                                                            |   |
+  |   |                Blackmud: The Last Age                      |   |
+  |   |                                                            |   |
+  |   |                   http://www.blackmud.com                  |   |
+  |   |                                                            |   |
+  |___|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|___|
+ (_____)                                                          (_____)
+    ~                                                                ~
+
+****
+
+As of Jun 4, 2014, new Server, new website, same old game...
+
+report issues to minektur@blackmud.com
+
+new forums, new website, same old server
+
+report issues to minektur@blackmud.com
+
+
+You are currently connected to the account: Vylar
+
+
+      Account Menu
+-------------------------------
+
+1) Exit from BlackMUD
+2) Connect to a character
+3) Create a character
+4) Change account password
+5) Change account email address
+6) Delete account
+7) Help
+
+Make your selection: 2
+
+Your Characters:
+    Lvl Cl  Character
+ 1)  60 DE  Vylar
+
+ Select a character: 1
+
+You are currently connected to the account: Vylar
+You are currently connected to the character: Vylar
+
+
+     Character Menu
+---------------------------
+
+1) Exit from BlackMUD
+2) Enter the game
+3) Enter a description
+4) Take the tutorial
+5) Delete this character
+6) Return to account menu
+7) Help
+
+Press RETURN to go back.
