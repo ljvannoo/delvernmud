@@ -5,8 +5,9 @@ from src.entities.action import Action
 from src.scripts.telnet_reporter import TelnetReporter
 
 class GameHandler(Handler):
-  def __init__(self, connection, character):
+  def __init__(self, connection, account, character):
     super().__init__(connection)
+    self._account = account
     self._character = character
     self._game_manager = GameManager()
 

@@ -1,6 +1,6 @@
 import logging
 from src.handlers.handler import Handler
-from src.handlers.main_menu_handler import MainMenuHandler
+from src.handlers.main_menu import MainMenuHandler
 import src.utils.vt100_codes as vt100
 from src.managers.account_manager import AccountManager
 from src.utils.exceptions import AccountDoesNotExistException

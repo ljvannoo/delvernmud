@@ -33,6 +33,10 @@ class Connection(object):
     current_handler.leave()
     self.handler().enter()
 
+  def switch_handler(self, new_state):
+    self._handler_stack.pop()
+    self.enter_handler(new_state)
+
   def hang_up(self):
     current_handler = self.handler()
     self._handler_stack = []
