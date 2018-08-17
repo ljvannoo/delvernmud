@@ -257,7 +257,10 @@ class GameManager(object):
 
       for character_id in room.character_ids:
         character = self._character_manager.get_character(character_id)
-        character.do_action(action)
+        if character:
+          character.do_action(action)
+        else:
+          logging.error('do_action() error: character_id "{0}" not found!'.format(character_id))
 
     def __action_to_room_items(self, action, room_id):
       room = self._room_manager.get_room(room_id)
