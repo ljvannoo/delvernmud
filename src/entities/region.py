@@ -11,6 +11,7 @@ class Region(
 
   def __init__(self, *args, **kwargs):
     super(Document, self).__init__(*args, **kwargs)
+    self._logic_modules = {}
 
   keywords = StringField(max_length=128)
 

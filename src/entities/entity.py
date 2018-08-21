@@ -12,8 +12,6 @@ class Entity(Document):
 class LogicEntity(Entity):
   logic = ListField(db_field='logic')
 
-  _logic_modules = {}
-
   meta = {'allow_inheritance': True, 'abstract': True}
 
   def add_logic(self, logic_name):

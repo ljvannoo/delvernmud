@@ -24,6 +24,7 @@ class Character(
 
   def __init__(self, *args, **kwargs):
     super(Document, self).__init__(*args, **kwargs)
+    self._logic_modules = {}
 
   logged_in = False
   account_id = ObjectIdField(db_field='accountId')

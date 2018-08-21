@@ -13,6 +13,7 @@ class Portal(entity.LogicEntity, entity.HasData, entity.HasRegion):
 
   def __init__(self, *args, **kwargs):
     super(Document, self).__init__(*args, **kwargs)
+    self._logic_modules = {}
 
   def find_paths_by_name(self, portal_name):
     result = []

@@ -24,6 +24,7 @@ class Room(
 
   def __init__(self, *args, **kwargs):
     super(Document, self).__init__(*args, **kwargs)
+    self._logic_modules = {}
 
   coordinates = EmbeddedDocumentField(Coordinate)
 
