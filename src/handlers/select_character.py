@@ -21,7 +21,7 @@ class SelectCharacterHandler(Handler):
       self._connection.leave_handler()
     elif cmd.isdigit() and int(cmd) in range(1,len(self._character_list)+1):
       self._connection.send_blank_line()
-      self._connection.switch_handler(CharacterMenuHandler(self._connection, self._account, self._character_list[int(cmd)-1]))
+      self._connection.switch_handler(CharacterMenuHandler(self._connection, self._account, self._character_list[int(cmd)-1].id))
     else:
       self._connection.send_line('<$nl><$red>Invalid option!<$nl>')
       self.__print_menu()
