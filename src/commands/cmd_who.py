@@ -15,7 +15,7 @@ class CmdWho(Command):
     connected_characters = game_manager.get_connected_characters()
 
     msg = 'Players<$nl>----------<$nl>'
-    for character in connected_characters:
-      msg = msg + '<$cyan>{0}<$reset><$nl>'.format(character.name)
+    for connected_character in connected_characters:
+      msg = msg + '<$cyan>{0}<$reset><$nl>'.format(connected_character.name)
 
     character.do_action(Action('announce', data={'msg': msg}))
