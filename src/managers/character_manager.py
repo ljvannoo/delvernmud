@@ -15,10 +15,11 @@ class CharacterManager(object):
 
     def get_character(self, character_id):
       if character_id:
-        #pylint: disable=E1101
-        characters = Character.objects(id=character_id)
-        if characters:
-          return characters[0]
+        if character_id not in self._active_characters:
+          characters = Character.objects(id=character_id)
+          self._active_characters[character_id] = characters[0]
+
+        return self._active_characters[character_id]
       return None
 
     def get_template(self, template_id):
