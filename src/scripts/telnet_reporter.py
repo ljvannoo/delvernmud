@@ -33,8 +33,11 @@ class TelnetReporter(Logic):
       self._connection.send(action.data['msg'])
       self.prompt()
     elif action.action_type == 'chat':
-      character = self._character_manager.get_character(self._character_id)
-      self._connection.send_line('<$nl><$dim><$yellow>{0} gossips, "{1}"<$reset>'.format(character.name, action.data['msg']))
+      character = self._character_manager.get_character(action.character_id)
+      name = character.name
+      if character.id == self._character_id:
+        name = 'You'
+      self._connection.send_line('<$nl><$dim><$yellow>{0} gossips, "{1}"<$reset>'.format(name, action.data['msg']))
       self.prompt()
 
   def prompt(self):
