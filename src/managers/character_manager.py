@@ -11,11 +11,19 @@ class CharacterManager(object):
 
     def find_by_account(self, account_ref):
       #pylint: disable=E1101
-      return Character.objects(account_id=account_ref)
+      characters = Character.objects(account_id=account_ref)
+
+      # Use cached versions if available
+      result = []
+      for character in characters:
+        result.append(self.get_character(character.id))
+
+      return result
 
     def get_character(self, character_id):
       if character_id:
         if character_id not in self._active_characters:
+          #pylint: disable=E1101
           characters = Character.objects(id=character_id)
           self._active_characters[character_id] = characters[0]
 

@@ -20,8 +20,14 @@ class SelectCharacterHandler(Handler):
     if not cmd:
       self._connection.leave_handler()
     elif cmd.isdigit() and int(cmd) in range(1,len(self._character_list)+1):
-      self._connection.send_blank_line()
-      self._connection.switch_handler(CharacterMenuHandler(self._connection, self._account, self._character_list[int(cmd)-1].id))
+      character = self._character_list[int(cmd)-1]
+      if character.logged_in:
+        self._connection.send_line('<$nl><$red>That character is already logged in!<$nl>')
+        self.__print_menu()
+        self.__prompt()
+      else:
+        self._connection.send_blank_line()
+        self._connection.switch_handler(CharacterMenuHandler(self._connection, self._account, character.id))
     else:
       self._connection.send_line('<$nl><$red>Invalid option!<$nl>')
       self.__print_menu()
@@ -38,7 +44,10 @@ Your Characters<$nl>
 -------------------------------<$nl>
 <$nl>"""
     for i in range(len(self._character_list)):
-      menu = menu + '{0}) {1}<$nl>'.format(i+1, self._character_list[i].name)
+      color = '<$reset>'
+      if self._character_list[i].logged_in:
+        color = '<$red>'
+      menu = menu + '{0}{1}) {2}<$nl>'.format(color, i+1, self._character_list[i].name)
     menu = menu.replace('\n', '')
     self._connection.send_line(menu)
 
