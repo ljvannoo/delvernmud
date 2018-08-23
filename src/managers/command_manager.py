@@ -28,6 +28,9 @@ class CommandManager(object):
     def get(self, cmd_name: str):
       return self._commands[cmd_name]
 
+    def valid_command(self, cmd_name: str):
+      return cmd_name in self._commands
+
     # def execute(self, player, cmd_string):
     #   if not cmd_string:
     #     return False

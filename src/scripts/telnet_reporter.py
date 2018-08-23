@@ -24,7 +24,7 @@ class TelnetReporter(Logic):
         self.__see_room(self._room_manager.get_room(action.room_id))
       self.prompt()
     elif action.action_type == 'error':
-      self._connection.send_line('<$bold><$red>' + action.data['msg'])
+      self._connection.send('<$bold><$red>' + action.data['msg'])
       self.prompt()
     elif action.action_type == 'leave':
       self._connection.leave_handler()

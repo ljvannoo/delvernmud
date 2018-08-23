@@ -378,7 +378,7 @@ class GameManager(object):
         command = self._command_manager.get(full_command_name)
         command.execute(character, params)
       else:
-        character.do_action(Action("error", data={'msg': 'Unrecognized command: {0}'.format(cmd_name)}))
+        character.do_action(Action("error", data={'msg': 'Unrecognized command: {0}<$nl>'.format(cmd_name)}))
 
 
 # ----------------------------------------------------------------------

@@ -38,6 +38,9 @@ class Character(
     if cmd_name not in self.commands:
       self.commands.append(cmd_name)
 
+  def has_command(self, cmd_name: str):
+    return cmd_name in self.commands
+
   def find_command(self, cmd_name: str):
     for command in self.commands:
       if command == cmd_name:
