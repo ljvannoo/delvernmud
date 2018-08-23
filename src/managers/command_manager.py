@@ -1,12 +1,18 @@
+import logging
+import glob, os
+
 class CommandManager(object):
   class __CommandManager(object):
     def __init__(self):
       self._commands = {}
 
-      self.register_command('look')
-      self.register_command('quit')
-      self.register_command('who')
-      self.register_command('gossip')
+      self.init_commands('src/commands')
+
+    def init_commands(self, dir):
+      os.chdir(dir)
+      for file in glob.glob("cmd_*.py"):
+        cmd_name = file[4:file.index('.py')]
+        self.register_command(cmd_name)
 
     def register_command(self, cmd_name):
       module_name = 'src.commands.cmd_' + cmd_name
@@ -17,6 +23,7 @@ class CommandManager(object):
 
       command = clazz()
       self._commands[command.name] = command
+      logging.info('Registering command \'{0}\''.format(command.name))
 
     def get(self, cmd_name: str):
       return self._commands[cmd_name]
