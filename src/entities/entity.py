@@ -76,11 +76,13 @@ class HasCharacters(Document):
 
   meta = {'allow_inheritance': True, 'abstract': True}
 
-  def add_character(self, character):
-    self.character_ids.append(character.id)
+  def add_character(self, character_id: str):
+    if character_id not in self.character_ids:
+      self.character_ids.append(character_id)
 
-  def remove_character(self, character):
-    self.character_ids.remove(character.id)
+  def remove_character(self, character_id: str):
+    if character_id in self.character_ids:
+      self.character_ids.remove(character_id)
 
 class HasItems(Document):
   item_ids = ListField(ObjectIdField(), db_field='itemIds')
