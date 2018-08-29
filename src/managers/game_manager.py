@@ -1,3 +1,4 @@
+import pdb
 import time
 import queue
 import logging
@@ -308,8 +309,8 @@ class GameManager(object):
 
       character.logged_in = True
       self._connected_characters.append(character)
-      room.add_character(character)
-      region.add_character(character)
+      room.add_character(character_id)
+      region.add_character(character_id)
 
       self.__action_to_realm_players(Action('enterrealm', character_id=character.id))
       region.do_action(Action('enterregion', character_id=character.id))
