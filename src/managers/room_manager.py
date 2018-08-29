@@ -22,11 +22,14 @@ class RoomManager(object):
       return Room.objects(region_id=region_id)
 
     def get_room(self, room_id):
-      if not room_id:
-        return None
+      if room_id:
+        if room_id not in self._active_rooms:
+          #pylint: disable=E1101
+          rooms = Room.objects(id=room_id)
+          self._active_rooms[room_id] = rooms[0]
 
-      #pylint: disable=E1101
-      return Room.objects(id=room_id)[0]
+        return self._active_rooms[room_id]
+      return None
 
 # ----------------------------------------------------------------------
   instance = None
