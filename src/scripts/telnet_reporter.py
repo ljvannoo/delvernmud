@@ -1,3 +1,4 @@
+import pdb
 import logging
 
 from src.scripts.logic import Logic
@@ -64,7 +65,11 @@ class TelnetReporter(Logic):
     self.__send_line('No exits.') #TODO
 
   def __see_room_characters(self, room: Room):
-    self.__send_line('No characters.') #TODO
+    character_ids = room.character_ids
+    for character_id in character_ids:
+      if character_id != self._character_id:
+        character = self._character_manager.get_character(character_id)
+        self.__send_line('{0} is standing here.'.format(character.name))
 
   def __see_room_items(self, room: Room):
     self.__send_line('No items.') #TODO
