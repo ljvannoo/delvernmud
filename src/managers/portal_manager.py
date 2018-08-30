@@ -2,9 +2,18 @@ from src.entities.portal import Portal
 
 class PortalManager(object):
   class __PortalManager(object):
+    def __init__(self):
+      self._active_portals = {}
+
     def get_portal(self, portal_id):
-      #pylint: disable=E1101
-      return Portal.objects(id=portal_id)
+      if portal_id:
+        if portal_id not in self._active_portals:
+          #pylint: disable=E1101
+          portals = Portal.objects(id=portal_id)
+          self._active_portals[portal_id] = portals[0]
+
+        return self._active_portals[portal_id]
+      return None
 
 # ----------------------------------------------------------------------
   instance = None

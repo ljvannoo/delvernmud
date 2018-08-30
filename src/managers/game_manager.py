@@ -103,9 +103,9 @@ class GameManager(object):
       elif action.action_type == 'attemptsay':
         self.__say(action.character_id, action.data['msg'])
       elif action.action_type == 'command':
-        self.__do_command(action.character_id, action.data['cmd']) # TODO: WORKING
+        self.__do_command(action.character_id, action.data['cmd'])
       elif action.action_type == 'attemptenterportal':
-        self.__enter_portal(action.character_id, action.portal_id) # TODO
+        self.__enter_portal(action.character_id, action.portal_id, action.data['direction'])
       elif action.action_type == 'attempttransport':
         self.__transport(action.character_id, action.room_id)
       elif action.action_type == 'forcetransport':
@@ -356,15 +356,83 @@ class GameManager(object):
       room.do_action(action)
       region.do_action(action)
 
-    def __enter_portal(self, character_id, portal_id): # TODO: Working
+    def __enter_portal(self, character_id, portal_id, direction: str):
       character = self._character_manager.get_character(character_id)
       portal = self._portal_manager.get_portal(portal_id)
       old_room = self._room_manager.get_room(character.room_id)
 
-      # TODO: I don't understand how paths work, from direction name to entering the portal
-      # Do rooms have multiple portals?
-      # Do portals have multiple paths with the same direction name?
-      paths = portal.find_paths_by_start_room(portal)
+      path = portal.find_path_from(old_room.id, direction)
+
+      new_room = self._room_manager.get_room(path.end_room_id)
+      old_region = self._region_manager.get_region(old_room.region_id)
+      new_region = self._region_manager.get_region(new_room.region_id)
+      changing_regions = (old_region.id != new_region.id)
+
+      # Ask permission
+      if changing_regions:
+        action = Action('canleaveregion', character_id=character.id, region_id=old_region.id)
+        if old_region.do_action(action):
+          return
+        if character.do_action(action):
+          return
+
+        action = Action('canenterregion', character_id=character.id, region_id=old_region.id)
+        if new_region.do_action(action):
+          return
+        if character.do_action(action):
+          return
+
+      action = Action('canleaveroom', character_id=character.id, room_id=old_room.id)
+      if old_room.do_action(action):
+        return
+      if character.do_action(action):
+        return
+
+      action = Action('canenterroom', character_id=character.id, room_id=new_room.id)
+      if new_room.do_action(action):
+        return
+      if character.do_action(action):
+        return
+
+      if portal.do_action(Action('canenterportal', character_id=character.id, data={'direction': direction})):
+        return
+
+      # tell the room that the player is leaving
+      if changing_regions:
+        action = Action('leaveregion', character_id=character.id, region_id=old_region.id)
+        old_region.do_action(action)
+        character.do_action(action)
+
+      action = Action('leaveroom', character_id=character.id, portal_id=portal.id, room_id=old_room.id, data={'path': path})
+      self.__action_to_room_characters(action, old_room.id)
+      self.__action_to_room_items(action, old_room.id)
+      old_room.do_action(action)
+
+      # tell the portal that the player has actually entered
+      action = Action('enterportal', character_id=character.id, portal_id=portal)
+      portal.do_action(action)
+      character.do_action(action)
+
+      # actually move the character
+      if changing_regions:
+        old_region.remove_character(character.id)
+        character.region_id = new_region.id
+        new_region.add_character(character.id)
+
+      old_room.remove_character(character.id)
+      character.room_id = new_room.id
+      new_room.add_character(character.id)
+
+      # tell everyone in the room that the player has entered
+      if changing_regions:
+        action = Action('enterregion', character_id=character.id, region_id=new_region.id)
+        new_region.do_action(action)
+        character.do_action(action)
+
+      action = Action('enterroom', character_id=character.id, portal_id=portal.id, room_id=new_room.id, data={'path': path})
+      new_room.do_action(action)
+      self.__action_to_room_characters(action, new_room.id)
+      self.__action_to_room_items(action, new_room.id)
 
     def __do_command(self, character_id: str, cmd_string: str):
       character = self._character_manager.get_character(character_id)
@@ -373,7 +441,6 @@ class GameManager(object):
       params = string_utils.remove_word(cmd_string)
 
       # logging.info('{0} is attempting to execute \'{1}\' with parameters \'{2}\''.format(character.name, cmd_name, params))
-
       full_command_name = character.find_command(cmd_name)
       if full_command_name:
         command = self._command_manager.get(full_command_name)

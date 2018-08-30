@@ -1,5 +1,4 @@
 from mongoengine import Document, StringField, ObjectIdField, ListField, DictField
-# from src.managers.portal_manager import PortalManager
 from src.entities.action import Action
 
 class Entity(Document):
@@ -86,21 +85,21 @@ class HasCharacters(Document):
 
 class HasItems(Document):
   item_ids = ListField(ObjectIdField(), db_field='itemIds')
-  
+
   meta = {'allow_inheritance': True, 'abstract': True}
 
 class HasPortals(Document):
   portal_ids = ListField(ObjectIdField(), db_field='portalIds')
-  
+
   meta = {'allow_inheritance': True, 'abstract': True}
 
-  # def find_portals_by_name(self, portal_name):
-  #   portal_manager = PortalManager()
+  def find_portal(self, direction: str):
+    from src.managers.portal_manager import PortalManager
+    portal_manager = PortalManager()
+    for portal_id in self.portal_ids:
+      portal = portal_manager.get_portal(portal_id)
+      for path in portal.paths:
+        if path.direction_name == direction:
+          return portal
 
-  #   portals = []
-  #   for portal_id in self.portal_ids:
-  #     portal = portal_manager.get_portal(portal_id)
-  #     if portal.find_path_by_name(portal_name):
-  #       portals.append(portal)
-
-  #   return portals
+    return None

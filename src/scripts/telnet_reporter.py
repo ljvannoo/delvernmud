@@ -5,12 +5,14 @@ from src.scripts.logic import Logic
 import src.utils.vt100_codes as vt100
 from src.managers.character_manager import CharacterManager
 from src.managers.room_manager import RoomManager
+from src.managers.portal_manager import PortalManager
 from src.entities.room import Room
 
 class TelnetReporter(Logic):
   def __init__(self, character_id, connection):
     self._character_manager = CharacterManager()
     self._room_manager = RoomManager()
+    self._portal_manager = PortalManager()
 
     self._character_id = character_id
     self._connection = connection
@@ -20,6 +22,26 @@ class TelnetReporter(Logic):
     if action.action_type == 'enterrealm':
       character = self._character_manager.get_character(self._character_id)
       self.__send_line('{0} enters the realm.<$nl>'.format(character.name))
+    elif action.action_type == 'enterroom':
+      if action.character_id and action.character_id == self._character_id:
+        self.__see_room(self._room_manager.get_room(action.room_id))
+      else:
+        character = self._character_manager.get_character(action.character_id)
+        path = action.data['path']
+        if path:
+          self._connection.send_line('{0} walks in from the {1}.'.format(character.name, path.direction_name))
+        else:
+          self._connection.send_line('{0} walks in.'.format(character.name))
+      self.prompt()
+    elif action.action_type == 'leaveroom':
+      if action.character_id != self._character_id:
+        character = self._character_manager.get_character(action.character_id)
+        path = action.data['path']
+        if path:
+          self._connection.send_line('{0} leaves towards the {1}.'.format(character.name, path.direction_name))
+        else:
+          self._connection.send_line('{0} walks away.'.format(character.name))
+      self.prompt()
     elif action.action_type == 'seeroom':
       if action.character_id and action.character_id == self._character_id:
         self.__see_room(self._room_manager.get_room(action.room_id))
@@ -62,7 +84,16 @@ class TelnetReporter(Logic):
     self.__send_line(room.description, indent=True, wrap=True)
 
   def __see_room_exits(self, room: Room):
-    self.__send_line('No exits.') #TODO
+    exits = []
+    portal_ids = room.portal_ids
+    for portal_id in portal_ids:
+      portal = self._portal_manager.get_portal(portal_id)
+      for path in portal.paths:
+        if path.start_room_id == room.id:
+          exits.append(path.direction_name.lower().capitalize())
+
+    if exits:
+      self.__send_line('Exits: {0}'.format(', '.join(exits)))
 
   def __see_room_characters(self, room: Room):
     character_ids = room.character_ids

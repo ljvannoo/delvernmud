@@ -46,6 +46,7 @@ class CreateCharacterHandler(Handler):
     character.add_command('quit')
     character.add_command('who')
     character.add_command('gossip')
+    character.add_command('go')
 
     character.save()
 
