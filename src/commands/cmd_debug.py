@@ -15,5 +15,6 @@ class CmdDebug(Command):
     msg = msg + 'ID: <$green>{0}<$nl>'.format(character.id)
     msg = msg + 'Name: <$green>{0}<$nl>'.format(character.name)
     msg = msg + 'Logged in? <$green>{0}<$nl>'.format(character.logged_in)
+    msg = msg + 'Current room: {0}<$nl>'.format(character.room_id)
     msg = msg + '----------<$nl>'
     character.do_action(Action('announce', data={'msg': msg}))
