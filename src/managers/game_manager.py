@@ -106,6 +106,8 @@ class GameManager(object):
         self.__do_command(action.character_id, action.data['cmd'])
       elif action.action_type == 'attemptenterportal':
         self.__enter_portal(action.character_id, action.portal_id, action.data['direction'])
+      elif action.action_type == 'attemptseethroughportal':
+        self.__see_through_portal(action.character_id, action.portal_id, action.data['direction'])
       elif action.action_type == 'attempttransport':
         self.__transport(action.character_id, action.room_id)
       elif action.action_type == 'forcetransport':
@@ -433,6 +435,42 @@ class GameManager(object):
       new_room.do_action(action)
       self.__action_to_room_characters(action, new_room.id)
       self.__action_to_room_items(action, new_room.id)
+
+    def __see_through_portal(self, character_id: str, portal_id: str, direction: str):
+      character = self._character_manager.get_character(character_id)
+      portal = self._portal_manager.get_portal(portal_id)
+      old_room = self._room_manager.get_room(character.room_id)
+
+      path = portal.find_path_from(old_room.id, direction)
+
+      new_room = self._room_manager.get_room(path.end_room_id)
+      old_region = self._region_manager.get_region(old_room.region_id)
+      new_region = self._region_manager.get_region(new_room.region_id)
+      changing_regions = (old_region.id != new_region.id)
+
+      # Ask permission
+      if changing_regions:
+        action = Action('canseeregion', character_id=character.id, region_id=old_region.id)
+        if old_region.do_action(action):
+          return
+        if character.do_action(action):
+          return
+
+      action = Action('canseeroom', character_id=character.id, room_id=new_room.id)
+      if new_room.do_action(action):
+        return
+      if character.do_action(action):
+        return
+
+      if portal.do_action(Action('canenterportal', character_id=character.id, data={'direction': direction})):
+        return
+
+      # Perform actions
+      action = Action('remoteseeroom', character_id=character.id, room_id=new_room.id, portal_id=portal, data={'path': path})
+      portal.do_action(action)
+      character.do_action(action)
+      new_room.do_action(action)
+      old_room.do_action(action)
 
     def __do_command(self, character_id: str, cmd_string: str):
       character = self._character_manager.get_character(character_id)
