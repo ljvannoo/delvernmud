@@ -49,6 +49,19 @@ class TelnetReporter(Logic):
       if action.character_id and action.character_id == self._character_id:
         self.__see_room(self._room_manager.get_room(action.room_id))
       self.prompt()
+    elif action.action_type == 'remoteseeroom':
+      if action.character_id == self._character_id:
+        character = self._character_manager.get_character(self._character_id)
+        if action.room_id != character.room_id:
+          room = self._room_manager.get_room(action.room_id)
+
+          if action.data and action.data['path']:
+            direction = action.data['path'].direction_name
+            self._connection.send_line('You look {0}wards.'.format(direction))
+          self.__see_room_name(room)
+          self.__see_room_characters(room)
+
+          self.prompt()
     elif action.action_type == 'error':
       self._connection.send('<$bold><$red>' + action.data['msg'])
       self.prompt()
