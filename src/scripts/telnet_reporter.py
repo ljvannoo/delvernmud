@@ -20,12 +20,15 @@ class TelnetReporter(Logic):
   def do_action(self, action):
     # logging.info('Character {0} recieved action: type={1}'.format(self._character_id, action.action_type))
     if action.action_type == 'enterrealm':
-      character = self._character_manager.get_character(self._character_id)
-      self.__send_line('{0} enters the realm.<$nl>'.format(character.name))
+      name = 'You enter'
+      if action.character_id != self._character_id:
+        character = self._character_manager.get_character(action.character_id)
+        name = character.name + ' enters'
+      self.__send_line('<$nl>{0} the realm.'.format(name))
     elif action.action_type == 'enterroom':
       if action.character_id and action.character_id == self._character_id:
         self.__see_room(self._room_manager.get_room(action.room_id))
-      else:
+      elif action.data:
         character = self._character_manager.get_character(action.character_id)
         path = action.data['path']
         if path:
