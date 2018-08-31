@@ -9,6 +9,7 @@ import src.utils.vt100_codes as vt100
 
 class Game(object):
   def __init__(self):
+    logging.info('Intializing game...')
     self._connections = []
     self._loop = asyncio.get_event_loop()
 

@@ -1,22 +1,16 @@
 import logging
 
-from src.commands.base_command import BaseCommand
-from src.managers.player_manager import PlayerManager
-import src.utils.vt100_codes as vt100
+from src.commands.command import Command
+from src.entities.action import Action
+from src.entities.character import Character
+from src.managers.game_manager import GameManager
 
-class GossipCommand(BaseCommand):
-  def __init__(self):
-    super().__init__('gossip')
-    self._player_manager = PlayerManager()
+class CmdGossip(Command):
+  name = 'gossip'
+  usage = 'gossip <message>'
+  description = 'Send a message to every player who is currently logged into the game.'
 
-  def execute(self, player, param_string=''):
-    conn = player.get_connection()
-    
-    msg = 'You gossip, "' + param_string + '"' + vt100.newline
-    conn.send(vt100.newline + msg)
+  def execute(self, character: Character, param_string: str):
+    game_manager = GameManager()
 
-    msg = vt100.cyan + player.get_name() + vt100.reset + ' gossips, "' + param_string + '"'
-    self._player_manager.send_others(player, vt100.clearline + vt100.home + msg + vt100.newline)
-    logging.info(msg.rstrip())
-
-    return True
+    game_manager.add_action_absolute(0, Action('chat', character_id=character.id, data={'msg': param_string}))

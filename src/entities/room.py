@@ -1,4 +1,5 @@
 from mongoengine import Document, EmbeddedDocument, StringField, IntField, ListField, ObjectIdField, EmbeddedDocumentField
+import src.entities.entity as entity
 
 # class RoomTemplate(Document):
 #   name = StringField(max_length=128, required=True, unique=True)
@@ -13,12 +14,20 @@ class Coordinate(EmbeddedDocument):
   y = IntField(required=True) # south to north
   z = IntField(required=True) # bottom to top
 
-class Room(Document):
-  name = StringField(max_length=128, required=True, unique=True)
-  description = StringField(max_length=2048)
-  # template_id = ObjectIdField()
+class Room(
+    entity.LogicEntity,
+    entity.HasData,
+    entity.HasRegion,
+    entity.HasCharacters,
+    entity.HasItems,
+    entity.HasPortals):
+
+  def __init__(self, *args, **kwargs):
+    super(Document, self).__init__(*args, **kwargs)
+    self._logic_modules = {}
+
   coordinates = EmbeddedDocumentField(Coordinate)
-  region_id = ObjectIdField(db_field='regionId')
-  portal_ids = ListField(ObjectIdField(), db_field='portalIds')
-  character_ids = ListField(ObjectIdField(), db_field='characterIds')
-  item_ids = ListField(ObjectIdField(), db_field='itemIds')
+
+  meta: {
+    'collection': 'room'
+  }

@@ -1,9 +1,9 @@
-from src.entities.character import Character
+from src.entities.character import Character, CharacterTemplate
 
 class CharacterManager(object):
   class __CharacterManager(object):
     def __init__(self):
-      pass
+      self._active_characters = {}
 
     def find_by_name(self, name):
       #pylint: disable=E1101
@@ -11,7 +11,32 @@ class CharacterManager(object):
 
     def find_by_account(self, account_ref):
       #pylint: disable=E1101
-      return Character.objects(accountId=account_ref)
+      characters = Character.objects(account_id=account_ref)
+
+      # Use cached versions if available
+      result = []
+      for character in characters:
+        result.append(self.get_character(character.id))
+
+      return result
+
+    def get_character(self, character_id):
+      if character_id:
+        if character_id not in self._active_characters:
+          #pylint: disable=E1101
+          characters = Character.objects(id=character_id)
+          self._active_characters[character_id] = characters[0]
+
+        return self._active_characters[character_id]
+      return None
+
+    def get_template(self, template_id):
+      if template_id:
+        #pylint: disable=E1101
+        templates = CharacterTemplate.objects(id=template_id)
+        if templates:
+          return templates[0]
+      return None
 
 # ----------------------------------------------------------------------
   instance = None
