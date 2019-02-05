@@ -26,6 +26,7 @@ class Game(object):
     finally:
       self._connections.remove(connection)
 
+  @asyncio.coroutine
   def main_loop(self, connection):
     from telnetlib3 import WONT, ECHO, SGA
     connection.set_iac(WONT, SGA)
